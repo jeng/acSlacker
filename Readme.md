@@ -13,5 +13,5 @@ the links.
 
 To make sure someone doesn't hijack your commands, the yaml file should contain
 your tokens. The `SLACK_TOKEN` environment variable needs to be a comma
-separated string in the format `<command>:<token>`
+separated string in the format `<command>:<token>`.  A single command can have multiple tokens.  Just separate each one with a colon.
 

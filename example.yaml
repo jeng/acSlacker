@@ -11,7 +11,7 @@ libraries:
   version: latest
 
 env_variables:
-  SLACK_TOKEN: '/kb:KB_TOKEN, /echo:ECHO_TOKEN'
+  SLACK_TOKEN: '/kb:KB_TOKEN:KB_TOKEN2, /echo:ECHO_TOKEN'
   DEBUGGING: true
 
 handlers:

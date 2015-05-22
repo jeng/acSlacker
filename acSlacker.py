@@ -17,11 +17,18 @@ class Slacker(Handler):
 
     def post(self):
 
-        tokens = dict([tuple(x.strip().split(":")) 
-                 for x in os.environ["SLACK_TOKEN"].split(",")])
+        #The slack token enviroment variable has this syntax:
+        #tokenList = <string>[:<string>]*
+        #command = <string>:<tokenList>
+        #commandList = <command>[,<command>]*
+         
+        tokens = {}
+        for commands in os.environ["SLACK_TOKEN"].split(","):
+            cmdTok = commands.strip().split(":")
+            tokens[cmdTok[0].strip()] = set([x.strip() for x in cmdTok[1:]])
 
         cmd = self.command()
-        if tokens.has_key(cmd) and self.token() == tokens[cmd]:
+        if tokens.has_key(cmd) and self.token() in tokens[cmd]:
             command_pool = CommandPool(self.request, self.response)
             command_pool.run()
         else:
