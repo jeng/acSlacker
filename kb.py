@@ -11,37 +11,23 @@
 import json
 import urllib
 import urllib2
-import StringIO
-from lxml import etree
 from handler import Handler
 
 class Kb(Handler):
     def run(self):
-        baseUrl = 'http://support.americommerce.com'
-        path = '/hc/en-us/search'
-        params = {'utf8': '%E2%9C%93', 
-                  'query': self.text(), 
-                  'commit':'Search', 
-                  'format':'json'}
+        max_results = 10
+        baseUrl = 'https://support.sparkpay.com'
+        path = '/api/v2/help_center/articles/search.json'
+        params = {'query': self.text()}
         url = "%s%s?%s" % (baseUrl, path, urllib.urlencode(params))
         req = urllib2.Request(url)
         response = urllib2.urlopen(req)
         the_page = response.read()
         results = json.loads(the_page)
-        if results.has_key("html"):
-            doc = results["html"]
-            parser = etree.HTMLParser()
-            html = etree.parse(StringIO.StringIO(doc), parser)
-
-            anchors = [(x.text, [y for y in x.items() if y[0] == 'href'][0:]) 
-                       for x in html.iter() if x.tag == 'a']
-
-            wellformed = [(title, baseUrl+attr[0][1]) 
-                          for title, attr in anchors 
-                          if len(attr) > 0 and len(attr[0]) == 2]
-
-            for post, location in wellformed:
-                self.write('<%s|%s>\n' % (location, post)) 
+        if results.has_key("results"):
+            for e in results["results"][:max_results]:
+                if e.has_key("title") and e.has_key("html_url"):
+                    self.write('<%s|%s>\n' % (e["html_url"], e["title"])) 
         else:
             self.write("Nothing")
 
