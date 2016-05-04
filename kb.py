@@ -24,11 +24,16 @@ class Kb(Handler):
         response = urllib2.urlopen(req)
         the_page = response.read()
         results = json.loads(the_page)
+        data_sent = False
+
         if results.has_key("results"):
             for e in results["results"][:max_results]:
                 if e.has_key("title") and e.has_key("html_url"):
+                    data_sent = True
                     self.write('<%s|%s>\n' % (e["html_url"], e["title"])) 
-        else:
+
+        if not data_sent:
             self.write("Nothing")
+        
 
 
